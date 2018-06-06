@@ -39,13 +39,6 @@ Android智能启动框架
 我们发现，当有优先级规则时，01的启动将根据优先级提前，充分利用了cpu，将启动时长从3.8s优化到2.6s
 
 
-### TODO List：
-
-下个版本我们将提供优先级导出和设置默认优先级的接口。
-
-
-
-
 ### 框架接入：
 
 1、增加依赖：
@@ -103,6 +96,8 @@ Android智能启动框架
 
             // 初始化启动器
             SmartStart.setContext(base);
+            // 设置默认优先级
+            SmartStart.getDefaultPriorities("{}");
             // 构建启动器
             SmartStart.addModuleStart(LockScreenManager.lockScreenModuleStart);
             SmartStart.addModuleStart(ArticleManager.articleModuleStart);

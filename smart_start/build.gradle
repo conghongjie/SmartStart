@@ -36,7 +36,7 @@ publish {
     userOrg = 'conghongjie00'//bintray.com用户名
     groupId = 'com.elvis.android'//jcenter上的路径
     artifactId = 'smart_start'//项目名称
-    publishVersion = '1.0.0'//版本号
+    publishVersion = '1.0.2'//版本号
     desc = 'smart start your Android App'//描述，不重要
     website = 'https://github.com/conghongjie/SmartStart'//github地址
 }

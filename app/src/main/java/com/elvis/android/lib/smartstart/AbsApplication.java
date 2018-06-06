@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.elvis.android.lib.smart_start.SmartStart;
 
@@ -20,11 +19,15 @@ public abstract class AbsApplication extends Application {
         super.attachBaseContext(base);
         // 初始化启动器
         SmartStart.setContext(base);
+        // 设置默认优先级
+        SmartStart.getDefaultPriorities(getDefaultPriorities());
         // 构建启动器
         buildSmartStart();
         // 开始执行ApplicationTasks
         SmartStart.startApplicationTasks();
     }
+
+    public abstract String getDefaultPriorities();
 
 
     public abstract void buildSmartStart();

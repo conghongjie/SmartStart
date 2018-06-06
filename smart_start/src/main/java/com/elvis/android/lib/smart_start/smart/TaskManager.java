@@ -253,7 +253,6 @@ public class TaskManager {
     }
 
     private static void doExecuteTask(Node node){
-        Log.e("ElvissS","---:"+node.task.taskKey);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             Trace.beginSection(node.task.taskKey);
         }

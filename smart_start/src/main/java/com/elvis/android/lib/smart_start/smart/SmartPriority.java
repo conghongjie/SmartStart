@@ -33,14 +33,16 @@ public class SmartPriority {
     private static HashMap<String,Integer> prioritys = new HashMap<>();
     private static void loadPrioritys(){
         JSONObject jsonObject = getSP();
-        Iterator iterator = jsonObject.keys();
-        String key;
-        while(iterator.hasNext()){
-            key = (String) iterator.next();
-            try {
-                prioritys.put(key,jsonObject.getInt(key));
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if (jsonObject!=null){
+            Iterator iterator = jsonObject.keys();
+            String key;
+            while(iterator.hasNext()){
+                key = (String) iterator.next();
+                try {
+                    prioritys.put(key,jsonObject.getInt(key));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -70,15 +72,12 @@ public class SmartPriority {
             }
             try {
                 jsonObject.put(node.task.taskKey,node.maxFinishTime-node.finishTime+node.takeTime);
-                Log.e("ElvisdD",node.task.taskKey+":::"+(node.maxFinishTime-node.finishTime+node.takeTime));
-                Log.d("ElvisdD","maxFinishTime:"+node.maxFinishTime);
-                Log.d("ElvisdD","finishTime:"+node.finishTime);
-                Log.d("ElvisdD","takeTime:"+node.takeTime);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
         setSp(jsonObject);
+        Log.e("SmartStart","Prioritys:"+jsonObject.toString());
     }
 
     static long getMaxFinishTimeInDependeds(Node node){
@@ -117,9 +116,15 @@ public class SmartPriority {
     static final String SP = "Smart_Priority_SP";
     static final String SP_KEY = "Smart_Priority_SP";
 
+    static String defaultPriorities = null;
+
+    public static void getDefaultPriorities(String defaultPriorities) {
+        SmartPriority.defaultPriorities = defaultPriorities;
+    }
+
     private static JSONObject getSP() {
         SPHelper spHelper = new SPHelper(TaskManager.getContext());
-        String jsonObjectString = spHelper.getString(SP,SP_KEY,"{}");
+        String jsonObjectString = spHelper.getString(SP,SP_KEY, defaultPriorities ==null?"{}": defaultPriorities);
         try {
             return new JSONObject(jsonObjectString);
         } catch (JSONException e) {
