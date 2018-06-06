@@ -31,7 +31,7 @@ SmartStart的核心思想是通过构建上一次启动的依赖图，将任务�
 #### 5、方便systrace查看：我们在每个任务执行时加入Trace标记
 
 此处有systrace图
-
+![Aaron Swartz](https://github.com/conghongjie/SmartStart/blob/master/readme_files/000000.png)
 
 
 ### 框架接入：
