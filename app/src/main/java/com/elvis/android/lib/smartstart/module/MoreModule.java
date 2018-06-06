@@ -48,6 +48,7 @@ public class MoreModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_04)
+                    .addDepend(StartConstant.Module_01)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -107,7 +108,7 @@ public class MoreModule {
         @Override
         public void buildTasks(ArrayList<AbsTask> tasks) {
             tasks.add(new ApplicationCPUTask(StartConstant.Module_21)
-                    .addDepend(StartConstant.Module_11)
+                    .addDepend(StartConstant.Module_04)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -116,7 +117,6 @@ public class MoreModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_22)
-                    .addDepend(StartConstant.Module_21)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -125,6 +125,7 @@ public class MoreModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_23)
+                    .addDepend(StartConstant.Module_21)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -133,8 +134,6 @@ public class MoreModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_24)
-                    .addDepend(StartConstant.Module_11)
-                    .addDepend(StartConstant.Module_21)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -222,7 +221,7 @@ public class MoreModule {
         @Override
         public void buildTasks(ArrayList<AbsTask> tasks) {
             tasks.add(new ApplicationCPUTask(StartConstant.Module_51)
-                    .addDepend(StartConstant.Module_13)
+                    .addDepend(StartConstant.Article_ApplicationTask_1)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -277,6 +276,7 @@ public class MoreModule {
         @Override
         public void buildTasks(ArrayList<AbsTask> tasks) {
             tasks.add(new ApplicationCPUTask(StartConstant.Module_71)
+                    .addDepend(StartConstant.Module_51)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -330,9 +330,6 @@ public class MoreModule {
         @Override
         public void buildTasks(ArrayList<AbsTask> tasks) {
             tasks.add(new ApplicationCPUTask(StartConstant.Module_91)
-                    .addDepend(StartConstant.Module_81)
-                    .addDepend(StartConstant.Module_31)
-                    .addDepend(StartConstant.Module_51)
                     .addDepend(StartConstant.Module_71)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
@@ -361,6 +358,7 @@ public class MoreModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_a2)
+                    .addDepend(StartConstant.Module_91)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -423,6 +421,7 @@ public class MoreModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_b5)
+                    .addDepend(StartConstant.Module_a2)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -445,7 +444,6 @@ public class MoreModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_c2)
-                    .addDepend(StartConstant.Module_21)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -463,7 +461,6 @@ public class MoreModule {
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_c4)
                     .addDepend(StartConstant.Module_11)
-                    .addDepend(StartConstant.Module_21)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -495,6 +492,7 @@ public class MoreModule {
         @Override
         public void buildTasks(ArrayList<AbsTask> tasks) {
             tasks.add(new ApplicationCPUTask(StartConstant.Module_d1)
+                    .addDepend(StartConstant.Module_b5)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -641,9 +639,7 @@ public class MoreModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Module_i2)
-                    .addDepend(StartConstant.Module_81)
-                    .addDepend(StartConstant.Module_b3)
-                    .addDepend(StartConstant.Module_f2)
+                    .addDepend(StartConstant.Module_d1)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -659,10 +655,7 @@ public class MoreModule {
         @Override
         public void buildTasks(ArrayList<AbsTask> tasks) {
             tasks.add(new ApplicationCPUTask(StartConstant.Module_j1)
-                    .addDepend(StartConstant.Module_81)
-                    .addDepend(StartConstant.Module_31)
-                    .addDepend(StartConstant.Module_i1)
-                    .addDepend(StartConstant.Module_71)
+                    .addDepend(StartConstant.Module_i2)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {

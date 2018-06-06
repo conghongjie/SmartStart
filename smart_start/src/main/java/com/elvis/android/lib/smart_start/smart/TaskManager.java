@@ -114,7 +114,7 @@ public class TaskManager {
             throw new RuntimeException("SmartStart出现相同的key："+task.taskKey);
         }
         node.task = task;
-        node.takeTime = SmartPriority.getPriority(task.taskKey);
+        node.priority = SmartPriority.getPriority(task.taskKey);
         for (String dependKey : task.getDepends()){
             Node dependNode = allNodes.get(dependKey);
             if (dependNode==null){
@@ -253,6 +253,7 @@ public class TaskManager {
     }
 
     private static void doExecuteTask(Node node){
+        Log.e("ElvissS","---:"+node.task.taskKey);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             Trace.beginSection(node.task.taskKey);
         }

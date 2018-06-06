@@ -24,20 +24,33 @@ Android智能启动框架
 
 #### 4、自学习优先级能力：根据上一次启动的任务链耗时，计算本次启动每个任务的优先级
 
-App的启动任务拆解后，任务之间的依赖关系构成一个依赖图，最长的耗时路径可能决定着App的启动耗时。当线程池执行完一个任务后，如果有n个无依赖的任务需要被执行，一旦我们没有选择那个最高优先级的任务去执行，就一定会拉长最长耗时路径的执行总时间，那么App的启动时长就会增加，所以我们的关键问题是，如何对任务设置优先级。
+1）原理介绍：App的启动任务拆解后，任务之间的依赖关系构成一个依赖图，最长的耗时路径可能决定着App的启动耗时。当线程池执行完一个任务后，如果有n个无依赖的任务需要被执行，一旦我们没有选择那个最高优先级的任务去执行，就一定会拉长最长耗时路径的执行总时间，那么App的启动时长就会增加，所以我们的关键问题是，如何对任务设置优先级。SmartStart的核心思想是通过构建上一次启动的依赖图，将以本任务为起点的最长耗时路径作为此任务下次启动的优先级。具体算法请阅读代码。
 
-SmartStart的核心思想是通过构建上一次启动的依赖图，将任务所在的所有路径中最长路径的耗时值作为此任务下次启动的优先级。具体算法请阅读代码。
+2）模拟启动：首先构建一个启动依赖图，并隐藏一条最长依赖链：01 - 04 - 21 - 23 - Article_Application_1 -51 - 71 - 91 - a2 - b5 - d1 - i2 - j1
 
-#### 5、方便systrace查看：我们在每个任务执行时加入Trace标记
+首次启动图：（没有无法根据上一次启动计算优先级）
 
-![Aaron Swartz](https://github.com/conghongjie/SmartStart/blob/master/readme_files/000000.png)
+![Aaron Swartz](https://github.com/conghongjie/SmartStart/blob/master/readme_files/smart_compare_1.png)
+
+第二次启动图：（根据上一次启动过计算优先级）
+
+![Aaron Swartz](https://github.com/conghongjie/SmartStart/blob/master/readme_files/smart_compare_2.png)
+
+我们发现，当有优先级规则时，01的启动将根据优先级提前，充分利用了cpu，将启动时长从3.8s优化到2.6s
+
+
+### TODO List：
+
+下个版本我们将提供优先级导出和设置默认优先级的接口。
+
+
 
 
 ### 框架接入：
 
 1、增加依赖：
 
-    compile 'com.elvis.android:smart_start:1.0.0'
+    compile 'com.elvis.android:smart_start:1.0.1'
 
 
 1、实现一个启动接口：

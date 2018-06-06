@@ -1,6 +1,8 @@
 package com.elvis.android.lib.smart_start.smart;
 
 
+import android.util.Log;
+
 import com.elvis.android.lib.smart_start.obj.Node;
 import com.elvis.android.lib.smart_start.utils.SPHelper;
 
@@ -63,11 +65,15 @@ public class SmartPriority {
         JSONObject jsonObject = getSP();
         for (Map.Entry<String, Node> entry : allNodes.entrySet()) {
             Node node = entry.getValue();
-            if (node.priority==-1){
-                node.priority = getMaxFinishTimeInDependeds(node);
+            if (node.maxFinishTime==-1){
+                node.maxFinishTime = getMaxFinishTimeInDependeds(node);
             }
             try {
-                jsonObject.put(node.task.taskKey,node.priority);
+                jsonObject.put(node.task.taskKey,node.maxFinishTime-node.finishTime+node.takeTime);
+                Log.e("ElvisdD",node.task.taskKey+":::"+(node.maxFinishTime-node.finishTime+node.takeTime));
+                Log.d("ElvisdD","maxFinishTime:"+node.maxFinishTime);
+                Log.d("ElvisdD","finishTime:"+node.finishTime);
+                Log.d("ElvisdD","takeTime:"+node.takeTime);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -93,11 +99,11 @@ public class SmartPriority {
             long max = 0;
             for (int i=0;i<newTempDependeds.size();i++){
                 Node temp = node.tempDependeds.get(i);
-                if (temp.priority==-1){
-                    temp.priority = getMaxFinishTimeInDependeds(temp);
+                if (temp.maxFinishTime==-1){
+                    temp.maxFinishTime = getMaxFinishTimeInDependeds(temp);
                 }
-                if (temp.priority>max){
-                    max = temp.priority;
+                if (temp.maxFinishTime>max){
+                    max = temp.maxFinishTime;
                 }
             }
             return max;

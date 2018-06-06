@@ -20,6 +20,7 @@ public class ArticleModule {
         @Override
         public void buildTasks(ArrayList<AbsTask> tasks) {
             tasks.add(new ApplicationCPUTask(StartConstant.Article_ApplicationTask_1)
+                    .addDepend(StartConstant.Module_23)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
@@ -28,7 +29,6 @@ public class ArticleModule {
                     })
             );
             tasks.add(new ApplicationCPUTask(StartConstant.Article_ApplicationTask_2)
-                    .addDepend(StartConstant.Article_ApplicationTask_1)
                     .setExecutor(new AbsTask.Executor() {
                         @Override
                         public void execute() {
