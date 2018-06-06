@@ -3,6 +3,8 @@ package com.elvis.android.lib.smartstart.module;
 import com.elvis.android.lib.smart_start.obj.AbsTask;
 import com.elvis.android.lib.smart_start.obj.ApplicationCPUTask;
 import com.elvis.android.lib.smart_start.obj.IModuleStart;
+import com.elvis.android.lib.smartstart.StartConstant;
+import com.elvis.android.lib.smartstart.Test;
 
 import java.util.ArrayList;
 

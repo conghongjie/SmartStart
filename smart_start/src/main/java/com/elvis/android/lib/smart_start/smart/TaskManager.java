@@ -4,6 +4,7 @@ package com.elvis.android.lib.smart_start.smart;
 import android.content.Context;
 import android.os.Build;
 import android.os.Trace;
+import android.util.Log;
 
 import com.elvis.android.lib.smart_start.obj.AbsTask;
 import com.elvis.android.lib.smart_start.obj.IModuleStart;
@@ -190,7 +191,7 @@ public class TaskManager {
                         @Override
                         public void run() {
                             SmartPriority.computePriority(priorityNodes);
-                            smartThreadPool.shutdown();
+                            //smartThreadPool.shutdown();
                         }
                     }).start();
                 }
