@@ -88,7 +88,7 @@ public class TaskPriorityManager {
                 dependTask.priorityInfo.dependedTasks.add(temp);
             }
         }
-        // 计算所有节点的优先级
+        // 计算所有节点后续还需要执行的总时间
         JSONObject jsonObject = new JSONObject();
         Iterator<Task> iterator2 = allTasks.values().iterator();
         while (iterator2.hasNext()) {
@@ -125,7 +125,7 @@ public class TaskPriorityManager {
             if (dependedTask.priorityInfo.timeToEnd == -1) {
                 computeTimeToEnd(dependedTask);
             }
-            // 根据依赖任务的最早时间+花费时间 = 自己的最早时间
+            // 最大值
             long dependedTimeToEnd = dependedTask.priorityInfo.timeToEnd;
             if (dependedTimeToEnd > maxDependedTimeToEnd) {
                 maxDependedTimeToEnd = dependedTimeToEnd;
