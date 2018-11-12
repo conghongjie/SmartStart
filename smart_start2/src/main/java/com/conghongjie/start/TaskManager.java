@@ -9,6 +9,10 @@ import com.conghongjie.start.state.TaskStateManager;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 任务执行管理器
@@ -60,16 +64,14 @@ public class TaskManager {
     public TaskManager(Context context,int threadPoolSize, Runnable finishCallBack) {
         mContext = context;
         this.threadPoolSize = threadPoolSize;
-        mFixedThreadExecutor = Executors.newFixedThreadPool(threadPoolSize);
-//        new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 2, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(), new ThreadFactory() {
-//            int i = 0;
-//
-//            @Override
-//            public Thread newThread(Runnable runnable) {
-//                i++;
-//                return new Thread("smart_start_thread_pool_" + i);
-//            }
-//        });
+        mFixedThreadExecutor = new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 2, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(), new ThreadFactory() {
+            int i = 0;
+            @Override
+            public Thread newThread(Runnable runnable) {
+                i++;
+                return new Thread(runnable,"start_pool_" + i);
+            }
+        });
         this.finishCallBack = finishCallBack;
     }
 
