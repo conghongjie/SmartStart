@@ -1,26 +1,19 @@
-package com.conghongjie.start.obj;
+package com.conghongjie.start.state;
+
+import com.conghongjie.start.Task;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class TaskWrapper {
+public class TaskStateInfo {
 
+    public List<String> dependTasks; //依赖的任务列表
 
-    public Task task;
-
-    public ArrayList<String> dependTasks; //依赖的任务列表
-
-
-
-    // 优先级相关
-
-
-    public TaskWrapper(Task task){
-        this.task = task;
-        if (task.dependTasks != null){
-            dependTasks = (ArrayList<String>) Arrays.asList(task.dependTasks);
-        }else {
-            dependTasks = new ArrayList<>();
+    public TaskStateInfo(Task task) {
+        dependTasks = new ArrayList<>();
+        for (int i=0;i<task.dependTasks.length;i++){
+            dependTasks.add(task.dependTasks[i]);
         }
     }
 

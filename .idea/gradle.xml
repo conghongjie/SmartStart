@@ -9,7 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/app2" />
             <option value="$PROJECT_DIR$/smart_start" />
+            <option value="$PROJECT_DIR$/smart_start2" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

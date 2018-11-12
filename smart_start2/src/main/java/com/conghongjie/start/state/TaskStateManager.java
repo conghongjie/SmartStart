@@ -1,96 +1,116 @@
-package com.conghongjie.start.manager;
+package com.conghongjie.start.state;
 
 
-import com.conghongjie.start.obj.Task;
-import com.conghongjie.start.obj.TaskWrapper;
+import com.conghongjie.start.Task;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * 节点状态管理器，只维护节点的状态
+ *
  * @author conghongjie
  */
-public class TaskPoolManager {
+public class TaskStateManager {
 
 
-
-    /** 无法执行的任务池（所依赖的任务还未完成） */
-    HashMap<String,TaskWrapper> unStartTaskPool = new HashMap<>();
-
-    /** 可执行的任务池 */
-    HashMap<String,TaskWrapper> waitingTaskPool = new HashMap<>();
-
-    /** 执行中的任务池 */
-    HashMap<String,TaskWrapper> runningTaskPool = new HashMap<>();
-
-    /** 已完成的任务池 */
-    HashMap<String,TaskWrapper> finishedTaskPool = new HashMap<>();
+    /**
+     * 状态池
+     */
+    HashMap<String, Task> unStartTasks = new HashMap<>();//无法执行（所依赖的任务还未完成）
+    HashMap<String, Task> waitingTasks = new HashMap<>();//等待执行
+    HashMap<String, Task> runningTasks = new HashMap<>();//正在执行
+    HashMap<String, Task> finishedTasks = new HashMap<>();//执行完成
 
 
     /**
      * 添加任务
+     *
      * @param task
      */
-    public void addTask(Task task){
+    public void addTask(Task task) {
         synchronized (this) {
-            // 非法检查
-            if (allTasks.get(task.taskKey) != null) {
-                throw new RuntimeException("taskKey has be used");
-            }
-            // 保存此任务
-            TaskWrapper node = new TaskWrapper(task);
-            allTasks.put(task.taskKey, node);
-            // 处理依赖关系（把已完成的任务依赖解除）
-            node.dependTasks.removeAll(finishedTaskPool.keySet());
-            // 决策放入哪个任务池中
-            if (node.dependTasks.size() > 0) {
-                unStartTaskPool.put(task.taskKey, node);
+            // 初始化状态信息
+            TaskStateInfo stateInfo = new TaskStateInfo(task);
+            task.stateInfo = stateInfo;
+            // 解除自身依赖
+            task.stateInfo.dependTasks.removeAll(finishedTasks.keySet());
+            // 根据状态，放入状态池
+            if (task.stateInfo.dependTasks.size() > 0) {
+                unStartTasks.put(task.taskKey, task);
             } else {
-                waitingTaskPool.put(task.taskKey, node);
+                waitingTasks.put(task.taskKey, task);
             }
         }
     }
 
     /**
-     * 获取下一个要执行的任务（优先级最高的等待任务）
-     * @return
+     * 任务执行 waiting -> running
+     *
+     * @param task
      */
-    public TaskWrapper getNextTaskToRun(){
-        synchronized (this) {
-            // TODO 找到优先级最高的等待任务
-            TaskWrapper taskWrapper;
-            if (taskWrapper!=null){
-                // 将此任务移动到执行状态池
-                waitingTaskPool.remove(taskWrapper.task.taskKey);
-                runningTaskPool.put(taskWrapper.task.taskKey,taskWrapper);
-                return taskWrapper;
-            }
-            return null;
-        }
-    }
-
-
-    /**
-     * 当任务结束时
-     * @param taskWrapper
-     */
-    public void onTaskFinish(TaskWrapper taskWrapper){
+    public void onTaskExceted(Task task) {
         synchronized (this) {
             // 将此任务移动到完成状态池
-            runningTaskPool.remove(taskWrapper.task.taskKey);
-            finishedTaskPool.put(taskWrapper.task.taskKey,taskWrapper);
+            waitingTasks.remove(task.taskKey);
+            runningTasks.put(task.taskKey, task);
         }
     }
 
-    public boolean isAllTaskFinish(){
-        if (unStartTaskPool.isEmpty() && waitingTaskPool.isEmpty() && runningTaskPool.isEmpty()){
-            return true;
+    /**
+     * 任务结束 running -> finished
+     *
+     * @param task
+     */
+    public void onTaskFinish(Task task) {
+        synchronized (this) {
+            // 将此任务移动到完成状态池
+            runningTasks.remove(task.taskKey);
+            finishedTasks.put(task.taskKey, task);
+            // 解除被依赖Task的依赖
+            Iterator<Task> iterator = unStartTasks.values().iterator();
+            while (iterator.hasNext()) {
+                Task temp = iterator.next();
+                temp.stateInfo.dependTasks.remove(task.taskKey);
+                if (temp.stateInfo.dependTasks.size() == 0) {
+                    iterator.remove();
+                    waitingTasks.put(temp.taskKey, temp);
+                }
+            }
         }
-        return false;
+    }
+
+    /**
+     * 获取所有等待中的任务
+     *
+     * @return
+     */
+    public Collection<Task> getWaitingTasks() {
+        return waitingTasks.values();
     }
 
 
+    /**
+     * 判断此时没有任务需要执行
+     *
+     * @return
+     */
+    public boolean isAllTaskFinish() {
+        synchronized (this){
+            if (unStartTasks.isEmpty() && waitingTasks.isEmpty() && runningTasks.isEmpty()) {
+                return true;
+            }
+            return false;
+        }
+    }
 
-
+    /**
+     * 释放资源
+     */
+    public void release(){
+        finishedTasks.clear();
+    }
 
 }

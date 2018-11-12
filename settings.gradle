@@ -1,1 +1,1 @@
-include ':app', ':smart_start'
+include ':app', ':smart_start', ':smart_start2', ':app2'
