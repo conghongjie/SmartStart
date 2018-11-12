@@ -30,6 +30,10 @@ public class TaskManager {
 
     private int state = STATE_NOSTART;//状态
 
+    long startTime = 0; //启动时间
+
+    long endTime = 0; //完成时间
+
     Context mContext;
 
     private ExecutorService mFixedThreadExecutor;//线程池
@@ -56,7 +60,7 @@ public class TaskManager {
      */
     public TaskManager(Context context,int threadPoolSize, Runnable finishCallBack) {
         mContext = context;
-        mFixedThreadExecutor = Executors.newCachedThreadPool();;
+        mFixedThreadExecutor = Executors.newFixedThreadPool(threadPoolSize);;
 //        new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 2, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(), new ThreadFactory() {
 //            int i = 0;
 //
@@ -78,6 +82,7 @@ public class TaskManager {
             throw new RuntimeException("can only be started one time");
         }
         state = STATE_RUNNING;
+        startTime = System.currentTimeMillis();
         // 启动脉冲
         keepRunning();
     }
@@ -129,8 +134,8 @@ public class TaskManager {
                     public void run() {
                         // 执行
                         long start = System.currentTimeMillis();
+                        Log.e("StartStart",(start-startTime)+":开始执行 "+task.taskKey);
                         task.runnable.run();
-                        Log.e("StartStart",task.taskKey+":"+(System.currentTimeMillis()-start));
                         taskPriorityManager.setTaskTakeTime(task,System.currentTimeMillis()-start);
                         taskStateManager.onTaskFinish(task);
                         keepRunning();
@@ -151,6 +156,9 @@ public class TaskManager {
             mFixedThreadExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
+                    // 打印耗时
+                    endTime = System.currentTimeMillis();
+                    Log.e("StartStart","任务总耗时："+(endTime-startTime));
                     // 回调
                     if (finishCallBack != null) {
                         finishCallBack.run();
