@@ -106,6 +106,10 @@ public class TaskStateManager {
         }
     }
 
+    public int getRunningTaskNum(){
+        return runningTasks.size();
+    }
+
     /**
      * 释放资源
      */

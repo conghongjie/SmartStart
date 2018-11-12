@@ -1,6 +1,7 @@
 package com.conghongjie.start;
 
 import android.content.Context;
+import android.os.Trace;
 import android.util.Log;
 
 import com.conghongjie.start.priority.TaskPriorityManager;
@@ -36,6 +37,8 @@ public class TaskManager {
 
     Context mContext;
 
+    int threadPoolSize;
+
     private ExecutorService mFixedThreadExecutor;//线程池
 
     Runnable finishCallBack;//完成回调
@@ -60,7 +63,8 @@ public class TaskManager {
      */
     public TaskManager(Context context,int threadPoolSize, Runnable finishCallBack) {
         mContext = context;
-        mFixedThreadExecutor = Executors.newFixedThreadPool(threadPoolSize);;
+        this.threadPoolSize = threadPoolSize;
+        mFixedThreadExecutor = Executors.newFixedThreadPool(threadPoolSize);
 //        new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 2, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(), new ThreadFactory() {
 //            int i = 0;
 //
@@ -103,15 +107,17 @@ public class TaskManager {
      * 添加任务（可在开始之前，也可以在开始之后,但在stop之前）
      */
     public void addTask(Task task) {
-        if (state != 0 && state != 1) {
-            throw new RuntimeException("has been stopped");
+        synchronized (TaskManager.this) {
+            if (state != 0 && state != 1) {
+                throw new RuntimeException("has been stopped");
+            }
+            // 状态管理器中添加任务
+            taskStateManager.addTask(task);
+            // 优先级管理器中添加任务
+            taskPriorityManager.addTask(mContext, task);
+            // 启动脉冲
+            keepRunning();
         }
-        // 状态管理器中添加任务
-        taskStateManager.addTask(task);
-        // 优先级管理器中添加任务
-        taskPriorityManager.addTask(mContext,task);
-        // 启动脉冲
-        keepRunning();
     }
 
     /**
@@ -124,6 +130,9 @@ public class TaskManager {
         synchronized (this){
             while (true) {
                 // 找到一个优先级最高的、等待执行的任务
+                if (taskStateManager.getRunningTaskNum()>=threadPoolSize){
+                    return;
+                }
                 final Task task = taskPriorityManager.getMaxPriorityTask(taskStateManager.getWaitingTasks());
                 if (task == null) {
                     return;
@@ -134,10 +143,13 @@ public class TaskManager {
                     public void run() {
                         // 执行
                         long start = System.currentTimeMillis();
-                        Log.e("StartStart",(start-startTime)+":开始执行 "+task.taskKey);
+                        Trace.beginSection(task.taskKey);
                         task.runnable.run();
+                        Trace.endSection();
                         taskPriorityManager.setTaskTakeTime(task,System.currentTimeMillis()-start);
-                        taskStateManager.onTaskFinish(task);
+                        synchronized (TaskManager.this){
+                            taskStateManager.onTaskFinish(task);
+                        }
                         keepRunning();
                         // 所有任务都完成的回调
                         tryDoFinishedJob();

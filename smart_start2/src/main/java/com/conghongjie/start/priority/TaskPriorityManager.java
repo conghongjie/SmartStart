@@ -16,7 +16,7 @@ import java.util.Iterator;
 /**
  * 只负责计算优先级相关的工作
  * <p>
- * 节点的优先级 = 节点及节点后至少还需要多少时间 = 节点所在最长路径的执行时长 - 节点最早开始执行的时间
+ * 节点的优先级 = 节点及节点后至少还需要多少时间
  *
  * @author conghongjie
  */
@@ -52,15 +52,26 @@ public class TaskPriorityManager {
      * 获取最高优先级的任务
      */
     public Task getMaxPriorityTask(Collection<Task> tasks) {
-        Task maxPriorityTask = null;
-        Iterator<Task> iterator = tasks.iterator();
-        while (iterator.hasNext()) {
-            Task temp = iterator.next();
-            if (maxPriorityTask == null || temp.priorityInfo.priority > maxPriorityTask.priorityInfo.priority) {
-                maxPriorityTask = temp;
+        synchronized (this){
+            JSONObject jsonObject = new JSONObject();
+            Task maxPriorityTask = null;
+            Iterator<Task> iterator = tasks.iterator();
+            while (iterator.hasNext()) {
+                Task temp = iterator.next();
+                try {
+                    jsonObject.put(temp.taskKey,temp.priorityInfo.priority);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (maxPriorityTask == null || temp.priorityInfo.priority > maxPriorityTask.priorityInfo.priority) {
+                    maxPriorityTask = temp;
+                }
             }
+            if (maxPriorityTask!=null){
+                Log.e("StartStart"," -----选择"+maxPriorityTask.taskKey+"   "+jsonObject.toString());
+            }
+            return maxPriorityTask;
         }
-        return maxPriorityTask;
     }
 
     /**
@@ -77,7 +88,7 @@ public class TaskPriorityManager {
                 dependTask.priorityInfo.dependedTasks.add(temp);
             }
         }
-        // 计算所有节点的最早开始执行的时间
+        // 计算所有节点的优先级
         JSONObject jsonObject = new JSONObject();
         Iterator<Task> iterator2 = allTasks.values().iterator();
         while (iterator2.hasNext()) {
@@ -89,19 +100,6 @@ public class TaskPriorityManager {
                 e.printStackTrace();
             }
         }
-//        // 计算所有节点所在最长路径执行时长
-//        Iterator<Task> iterator3 = allTasks.values().iterator();
-//        while (iterator3.hasNext()) {
-//            Task temp = iterator3.next();
-//            computeLongestTime(temp);
-//        }
-//        // 计算优先级
-//        Iterator<Task> iterator4 = allTasks.values().iterator();
-//        while (iterator4.hasNext()) {
-//            Task temp = iterator4.next();
-//            long priority = temp.priorityInfo.takeTimeOfLongestPath - temp.priorityInfo.timeToEnd;
-//
-//        }
         // 保存优先级
         TaskPrioritySaver.savePriorities(context, jsonObject);
         Log.e("StartStart",jsonObject.toString());
@@ -135,27 +133,6 @@ public class TaskPriorityManager {
         }
         task.priorityInfo.timeToEnd = maxDependedTimeToEnd + task.priorityInfo.takeTime;
     }
-
-
-    /**
-     * 计算节点所在最长路径执行时长
-     */
-    private void computeLongestTime(Task task) {
-        long longestTime = task.priorityInfo.takeTime + task.priorityInfo.timeToEnd;
-        for (int i = 0; i < task.priorityInfo.dependedTasks.size(); i++) {
-            Task dependedTask = task.priorityInfo.dependedTasks.get(i);
-            if (dependedTask.priorityInfo.takeTimeOfLongestPath == -1) {
-                computeLongestTime(dependedTask);
-            }
-            long dependedTaskLongestTime = dependedTask.priorityInfo.takeTimeOfLongestPath;
-            if (dependedTaskLongestTime > longestTime) {
-                longestTime = dependedTaskLongestTime;
-            }
-        }
-        task.priorityInfo.takeTimeOfLongestPath = longestTime;
-    }
-
-
     /**
      * 获取任务优先级
      *
